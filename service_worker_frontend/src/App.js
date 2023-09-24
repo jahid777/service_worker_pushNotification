@@ -70,6 +70,11 @@ function App() {
   return (
     <div className="App">
       <button onClick={() => handleOrderSubmit()}>click</button>
+       <h1>authKey: {authKey} </h1>
+  <h1>p256dhKey: {p256dhKey} </h1>
+  <h1>endpoint: {endpoint} </h1>
+    
+        
     </div>
   );
 }
