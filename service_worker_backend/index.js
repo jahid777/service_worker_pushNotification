@@ -74,48 +74,73 @@ client.connect((err) => {
   });
 
   //this is for the multiple targeting device and i can use my hard key, endpint
-  app.post("/sendPushNotification", (req, res) => {
-    const { title, body, endpoint, authKey, p256dhKey } = req.body;
+  app.post("/sendPushNotification", async (req, res) => {
+  const { title, body } = req.body; // Extract notification content
+  const devices = await getDevicesToSendNotification(); // Fetch the list of devices from your database or config
 
-    // Create an array of push subscriptions (endpoints and keys)
-    const pushSubscriptions = [
+  // Send notifications to selected devices
+  Promise.all(
+    devices.map(async (device) => {
+      try {
+        await sendNotificationToDevice(device, "Please Check the Dishco Order");
+      } catch (error) {
+        console.error("Error sending push notification:", error);
+        return error;
+      }
+    })
+  )
+    .then(() => res.sendStatus(200))
+    .catch((error) => {
+      console.error("Error sending push notifications:", error);
+      res.sendStatus(500);
+    });
+});
+
+//device where i want to send the notification
+const EndPointJahid =
+  "https://fcm.googleapis.com/fcm/send/chaebcfYUy0:APA91bEZvIIg1b1u5u61Fw7v1l8Qa1p5GzMnXu4F0Gmmjd5X8uYBQZBiPBzZr_wAeGX89YYfoWq_UZQykBNyC_v2VxX7-mv0T0FTwB5UOz5q9S4bKGc0LcZPky-qEB5Nr5x6k79O2kM1";
+const authKeyJahid = "v3HmOqoVy8ST8Z-Zxe94MQ";
+const p256dhKeyJhaid =
+  "BEkdf4JbaIYuVeqj8R8PK2IFVBfbvkl-_G2IbdEOsMpNpTwBJ-97ErwfONSOo2Mr2TyCtFW-dp67j3E60Lq7pGg";
+
+// Function to fetch devices from your database or config
+async function getDevicesToSendNotification() {
+  // Query your database or read from a configuration file to get the list of devices
+  // Example: return an array of devices with { endpoint, authKey, p256dhKey }
+  const devices = [
+    {
+      endpoint: EndPointJahid,
+      authKey: authKeyJahid,
+      p256dhKey: p256dhKeyJhaid,
+    },
+    {
+      endpoint: EndPointJahid,
+      authKey: authKeyJahid,
+      p256dhKey: p256dhKeyJhaid,
+    },
+    // Add more devices as needed
+  ];
+  return devices;
+}
+
+// Function to send a notification to a specific device
+async function sendNotificationToDevice(device, title, body) {
+  try {
+    // Use the Web Push API to send the notification
+    await webpush.sendNotification(
       {
-        endpoint: endpoint,
+        endpoint: device.endpoint,
         keys: {
-          auth: authKey,
-          p256dh: p256dhKey,
+          auth: device.authKey,
+          p256dh: device.p256dhKey,
         },
       },
-      {
-        endpoint: endpoint,
-        keys: {
-          auth: authKey,
-          p256dh: p256dhKey,
-        },
-      },
-      // Add more subscriptions as needed
-    ];
-
-    // Send the same push notification to all subscriptions
-    Promise.all(
-      pushSubscriptions.map(async (subscription) => {
-        try {
-          return await webpush.sendNotification(
-            subscription,
-            JSON.stringify("jahid")
-          );
-        } catch (error) {
-          console.error("Error sending push notification:", error);
-          return error;
-        }
-      })
-    )
-      .then(() => res.sendStatus(200))
-      .catch((error) => {
-        console.error("Error sending push notifications:", error);
-        res.sendStatus(500);
-      });
-  });
+      JSON.stringify({ title, body })
+    );
+  } catch (error) {
+    throw error;
+  }
+}
 
   app.get("/getOrders", (req, res) => {
     orderCollection?.find({}).toArray((err, documents) => {
