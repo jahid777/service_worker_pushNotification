@@ -20,8 +20,8 @@ function App() {
     }
   }, []);
 
-  // Handle order submission
-  const handleOrderSubmit = async () => {
+  // Handle push notificaion
+  const handlePushNotificaion = async () => {
     // Send order to the server
 
     // Request permission for push notifications
@@ -42,20 +42,25 @@ function App() {
         const p256dhKey = keys.p256dh;
         const endpoint = subscription.endpoint;
 
+        console.log(authKey);
+        console.log(p256dhKey);
+        console.log(endpoint);
+
         // Send a push notification request to the server
-        await fetch("http://localhost:8000/sendPushNotification", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: "New Order Received",
-            body: "A new order has been placed!",
-            authKey: authKey,
-            p256dhKey: p256dhKey,
-            endpoint: endpoint,
-          }),
-        });
+        await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/sendPushNotification`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              authKey: authKey,
+              p256dhKey: p256dhKey,
+              endpoint: endpoint,
+            }),
+          }
+        );
       } else {
         console.error("Push subscription not found.");
       }
