@@ -51,7 +51,7 @@ client.connect((err) => {
 
   //this is for the single targeting device
   // Route to send push notifications
-  app.post("/singleSendPushNotification", (req, res) => {
+  app.post("/sendPushNotification", (req, res) => {
     const { title, body, endpoint, authKey, p256dhKey } = req.body;
 
     console.log(req.body);
