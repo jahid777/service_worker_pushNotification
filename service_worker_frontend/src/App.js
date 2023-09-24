@@ -1,8 +1,13 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [authKey, setAuthKey] = useState(null);
+  const [p256dhKey, setP256dhKey] = useState(null);
+  const [endpoint, setEndpoint] = useState(null);
+
+
   //initial the service worker file into app.js and in the public folder make a service worker file
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -22,6 +27,7 @@ function App() {
 
   // Handle push notificaion
   const handlePushNotificaion = async () => {
+    
     // Send order to the server
 
     // Request permission for push notifications
@@ -42,13 +48,17 @@ function App() {
         const p256dhKey = keys.p256dh;
         const endpoint = subscription.endpoint;
 
-        console.log(authKey);
-        console.log(p256dhKey);
-        console.log(endpoint);
+
+        setAuthKey(authKey);
+        setP256dhKey(p256dhKey);
+        setEndpoint(endpoint);
+        
+        
+
 
         // Send a push notification request to the server
         await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/sendPushNotification`,
+          `${process.env.REACT_APP_BACKEND_URL}/addOrder`,
           {
             method: "POST",
             headers: {
@@ -69,10 +79,10 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={() => handleOrderSubmit()}>click</button>
-       <h1>authKey: {authKey} </h1>
-  <h1>p256dhKey: {p256dhKey} </h1>
-  <h1>endpoint: {endpoint} </h1>
+      <button onClick={() => handlePushNotificaion()}>click</button>
+       <h1>authKey= {authKey} </h1>
+  <h1>p256dhKey= {p256dhKey} </h1>
+  <h1>endpoint= {endpoint} </h1>
     
         
     </div>
