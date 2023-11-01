@@ -39,6 +39,13 @@ function App() {
         applicationServerKey:
           "BHI-d6o1XN0qzUKkqIYbUO1-VOw7DvrNPevHjr2UV9be7GZRZeeBPDikXJq8GH14a0rn2gFsv3XNQmpjQPRjMmc",
       });
+       // this is for subscription in 1st time, dont need to subscription in many time in one device
+      // registration.pushManager.subscribe({
+      //   userVisibleOnly: true,
+      //   applicationServerKey:
+      //     "BHI-d6o1XN0qzUKkqIYbUO1-VOw7DvrNPevHjr2UV9be7GZRZeeBPDikXJq8GH14a0rn2gFsv3XNQmpjQPRjMmc",
+      // });
+      
       // Get the push subscription
       const subscription = await registration.pushManager.getSubscription();
 
